@@ -179,8 +179,10 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
         [self handleActionWithType:SIAPPurchVerFailed data:nil];
         return;
     }
+    
+    NSDictionary *receiptDict = [NSJSONSerialization JSONObjectWithData:receipt options:0 error:nil];
     // 购买成功将交易凭证发送给服务端进行再次校验
-    [self handleActionWithType:SIAPPurchSuccess data:receipt];
+    [self handleActionWithType:SIAPPurchSuccess data:receiptDict];
     
     NSError *error;
     NSDictionary *requestContents = @{@"receipt-data": [receipt base64EncodedStringWithOptions:0]};
@@ -346,8 +348,8 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
 }
 
 //完成回调 自己的block
-- (void)handleActionWithType:(SIAPPurchType)type data:(NSData *)data {
-    [self handleActionWithType:type data:data invokeHandle:true];
+- (void)handleActionWithType:(SIAPPurchType)type data:(NSDictionary *)dict {
+    [self handleActionWithType:type data:dict invokeHandle:true];
 }
 
 #pragma mark - getter & setter
