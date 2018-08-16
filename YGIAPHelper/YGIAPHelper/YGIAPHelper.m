@@ -206,13 +206,17 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
     NSURLSessionDataTask *task = [session dataTaskWithRequest:storeRequest completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         if (error) {
             // 无法连接服务器,购买校验失败
-            [self handleActionWithType:SIAPPurchVerFailed data:nil];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self handleActionWithType:SIAPPurchVerFailed data:nil];
+            });
         } else {
             NSError *error;
             NSDictionary *jsonResponse = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
             if (!jsonResponse) {
                 // 苹果服务器校验数据返回为空校验失败
-                [self handleActionWithType:SIAPPurchVerFailed data:nil];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self handleActionWithType:SIAPPurchVerFailed data:nil];
+                });
             }
             
             // 先验证正式服务器,如果正式服务器返回21007再去苹果测试服务器验证,沙盒测试环境苹果用的是测试服务器
@@ -235,7 +239,9 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
                 [finishSet addObject:transaction];
                 
                 //需在添加对象后获得对象数量 不然有极低的可能遇到并发问题 而导致不执行回调
-                [self handleActionWithType:SIAPPurchVerSuccess data:data invokeHandle:[finishSet count]  == totalCount];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self handleActionWithType:SIAPPurchVerSuccess data:data invokeHandle:[finishSet count]  == totalCount];
+                });
             }
             NSLog(@"----验证结果 %@", jsonResponse);
         }
