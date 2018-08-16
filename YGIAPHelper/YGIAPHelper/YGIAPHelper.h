@@ -20,6 +20,7 @@ typedef NS_ENUM(NSInteger, SIAPPurchType) {
     SIAPPurchNotArrow       = 5, // 不允许内购
     SIAPPurchRestoreNotBuy  = 6, // 恢复购买数量为0
     SIAPPurchRestoreFailed  = 7, // 恢复失败
+    SIAPPurchEmptyID        = 8, // 购买ID为空
 };
 
 /**

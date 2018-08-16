@@ -76,6 +76,8 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
         } else {
             [self handleActionWithType:SIAPPurchNotArrow data:nil];
         }
+    } else {
+        [self handleActionWithType:SIAPPurchEmptyID data:nil];
     }
 }
 
@@ -159,7 +161,8 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
 // 交易失败
 - (void)failedTransaction:(SKPaymentTransaction *)transaction {
     if (transaction.error.code != SKErrorPaymentCancelled) {
-        [self handleActionWithType:SIAPPurchFailed data:nil];
+        NSData *data = [NSJSONSerialization dataWithJSONObject:@{@"error":transaction.error} options:0 error:nil];
+        [self handleActionWithType:SIAPPurchFailed data:data];
     } else {
         [self handleActionWithType:SIAPPurchCancle data:nil];
     }
