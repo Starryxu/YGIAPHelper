@@ -140,7 +140,7 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
 - (void)paymentQueue:(SKPaymentQueue *)queue restoreCompletedTransactionsFailedWithError:(NSError *)error {
     //恢复失败
     if(_restoreProgress != ENUMRestoreProgressUpdatedTransactions){
-        [self handleActionWithType:SIAPPurchRestoreFailed data:nil];
+        [self handleActionWithType:SIAPPurchRestoreFailed data:@{@"error":error.localizedDescription}];
     }
     _restoreProgress = ENUMRestoreProgressFinish;
     
@@ -161,8 +161,7 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
 // 交易失败
 - (void)failedTransaction:(SKPaymentTransaction *)transaction {
     if (transaction.error.code != SKErrorPaymentCancelled) {
-        NSData *data = [NSJSONSerialization dataWithJSONObject:@{@"error":transaction.error} options:0 error:nil];
-        [self handleActionWithType:SIAPPurchFailed data:data];
+        [self handleActionWithType:SIAPPurchFailed data:@{@"error":transaction.error.localizedDescription}];
     } else {
         [self handleActionWithType:SIAPPurchCancle data:nil];
     }
@@ -233,7 +232,7 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
                 NSString *productId = transaction.payment.productIdentifier;
                 
                 NSLog(@"\n\n===============>> 购买成功ID:%@ <<===============\n\n",productId);
-            
+                
                 //总数量
                 NSInteger totalCount = [[self.transactionCountMap valueForKey:operationId] integerValue];
                 
@@ -243,7 +242,7 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
                 
                 //需在添加对象后获得对象数量 不然有极低的可能遇到并发问题 而导致不执行回调
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [self handleActionWithType:SIAPPurchVerSuccess data:data invokeHandle:[finishSet count]  == totalCount];
+                    [self handleActionWithType:SIAPPurchVerSuccess data:jsonResponse invokeHandle:[finishSet count]  == totalCount];
                 });
             }
             NSLog(@"----验证结果 %@", jsonResponse);
@@ -252,8 +251,8 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
     
     [task resume];
     
-//    // 验证成功与否都注销交易,否则会出现虚假凭证信息一直验证不通过,每次进程序都得输入苹果账号
-//    [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+    //    // 验证成功与否都注销交易,否则会出现虚假凭证信息一直验证不通过,每次进程序都得输入苹果账号
+    //    [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
 }
 
 
@@ -291,6 +290,7 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
 
 //请求失败
 - (void)request:(SKRequest *)request didFailWithError:(NSError *)error {
+    [self handleActionWithType:SIAPPurchFailed data:@{@"error":error.localizedDescription}];
     NSLog(@"------------------错误-----------------:%@", error);
 }
 
@@ -302,7 +302,7 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
 #pragma mark - private method
 
 //适配器模式
-- (void)handleActionWithType:(SIAPPurchType)type data:(NSData *)data invokeHandle:(Boolean)invoke {
+- (void)handleActionWithType:(SIAPPurchType)type data:(NSDictionary *)dict invokeHandle:(Boolean)invoke {
     
 #ifdef DEBUG
     switch (type) {
@@ -341,7 +341,7 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
     }
     
     if (invoke && _handle) {
-        _handle(type, data);
+        _handle(type, dict);
     }
 }
 

@@ -24,9 +24,9 @@ typedef NS_ENUM(NSInteger, SIAPPurchType) {
 };
 
 /**
- * Block回调
+ * Block回调:1:dict为收据; 2:错误信息@{@"error":@""}
  */
-typedef void (^IAPCompletionHandle)(SIAPPurchType type, NSData *data);
+typedef void (^IAPCompletionHandle)(SIAPPurchType type, NSDictionary *dict);
 
 @interface YGIAPHelper : NSObject
 
