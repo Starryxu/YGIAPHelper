@@ -24,7 +24,7 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
 
 //判断一份交易获得验证的次数  key为随机值
 @property(nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *transactionCountMap;
-
+//需要验证的支付事务
 @property(nonatomic, strong) NSMutableDictionary<NSString *, NSMutableSet<SKPaymentTransaction *> *> *transactionFinishMap;
 
 @property(nonatomic,assign)ENUMRestoreProgress restoreProgress;
@@ -156,7 +156,6 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
     [self verifyPurchaseWithPaymentTransaction:transaction isTestServer:NO operationId:operationId];
 }
 
-
 // 交易失败
 - (void)failedTransaction:(SKPaymentTransaction *)transaction {
     if (transaction.error.code != SKErrorPaymentCancelled) {
@@ -166,6 +165,7 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
     }
 }
 
+// 交易验证
 - (void)verifyPurchaseWithPaymentTransaction:(SKPaymentTransaction *)transaction isTestServer:(BOOL)flag operationId:(NSString *)operationId {
     
     //交易验证
@@ -225,9 +225,8 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
                 //APP添加商品
                 NSString *productId = transaction.payment.productIdentifier;
                 
-                NSLog(@"\n===============>> 购买成功ID:%@ <<===============\n",productId);
-                
-                
+                NSLog(@"\n\n===============>> 购买成功ID:%@ <<===============\n\n",productId);
+            
                 //总数量
                 NSInteger totalCount = [[self.transactionCountMap valueForKey:operationId] integerValue];
                 
@@ -236,7 +235,7 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
                 [finishSet addObject:transaction];
                 
                 //需在添加对象后获得对象数量 不然有极低的可能遇到并发问题 而导致不执行回调
-                [self handleActionWithType:SIAPPurchVerSuccess data:nil invokeHandle:[finishSet count]  == totalCount];
+                [self handleActionWithType:SIAPPurchVerSuccess data:data invokeHandle:[finishSet count]  == totalCount];
             }
             NSLog(@"----验证结果 %@", jsonResponse);
         }
@@ -244,8 +243,8 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
     
     [task resume];
     
-    // 验证成功与否都注销交易,否则会出现虚假凭证信息一直验证不通过,每次进程序都得输入苹果账号
-    [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+//    // 验证成功与否都注销交易,否则会出现虚假凭证信息一直验证不通过,每次进程序都得输入苹果账号
+//    [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
 }
 
 
@@ -327,7 +326,7 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
     }
 #endif
     
-    //因为购买成功并不是最后一个步骤 没有意义 不进行处理
+    //因为购买成功并不是最后一个步骤 没有意义 不进行处理,需要完成验证
     if (type == SIAPPurchSuccess) {
         return;
     }
