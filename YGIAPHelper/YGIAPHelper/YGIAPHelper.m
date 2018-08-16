@@ -196,7 +196,6 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
     
     //In the test environment, use https://sandbox.itunes.apple.com/verifyReceipt
     //In the real environment, use https://buy.itunes.apple.com/verifyReceipt
-    
     NSString *serverString = @"https://buy.itunes.apple.com/verifyReceipt";
     if (flag) {
         serverString = @"https://sandbox.itunes.apple.com/verifyReceipt";
