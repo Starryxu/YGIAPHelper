@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
 s.name         = "YGIAPHelper"
-s.version      = "1.0.1"
+s.version      = "1.0.2"
 s.summary      = "iOS 内购/恢复购买"
 s.homepage     = "https://github.com/Starryxu/YGIAPHelper.git"
 s.license      = { :type => "MIT", :file => "LICENSE" }
