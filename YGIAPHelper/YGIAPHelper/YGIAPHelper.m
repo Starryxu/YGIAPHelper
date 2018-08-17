@@ -263,6 +263,7 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
     NSArray *products = response.products;
     if ([products count] <= 0) {
         NSLog(@"--------------没有商品------------------");
+        [self handleActionWithType:SIAPPurchNoProduct data:nil];
         return;
     }
     
@@ -330,6 +331,12 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
             break;
         case SIAPPurchRestoreFailed:
             NSLog(@"内购恢复失败");
+            break;
+        case SIAPPurchEmptyID:
+            NSLog(@"商品ID为空");
+            break;
+        case SIAPPurchNoProduct:
+            NSLog(@"没有可购买商品");
             break;
         default:
             break;

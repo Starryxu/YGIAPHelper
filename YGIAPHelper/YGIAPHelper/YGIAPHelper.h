@@ -21,6 +21,7 @@ typedef NS_ENUM(NSInteger, SIAPPurchType) {
     SIAPPurchRestoreNotBuy  = 6, // 恢复购买数量为0
     SIAPPurchRestoreFailed  = 7, // 恢复失败
     SIAPPurchEmptyID        = 8, // 购买ID为空
+    SIAPPurchNoProduct      = 9, // 没有可购买商品
 };
 
 /**
