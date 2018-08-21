@@ -32,16 +32,20 @@ typedef void (^IAPCompletionHandle)(SIAPPurchType type, NSDictionary *dict);
 @interface YGIAPHelper : NSObject
 
 /**
+ * App专用共享密钥, 订阅时使用
+ */
+@property (nonatomic, copy) NSString *password;
+
+
+/**
  * 获取内购实例
  */
 + (instancetype)sharedInstance;
 
-
 /**
- * 添加内购事物监听,第一次调用时 + (instancetype)sharedInstance默认添加
+ * 添加内购事物监听,默认初始化时已添加
  */
 - (void)addTransactionObserver;
-
 
 /**
  * 移除内购事物监听,不需要监听时移除
@@ -49,9 +53,21 @@ typedef void (^IAPCompletionHandle)(SIAPPurchType type, NSDictionary *dict);
 - (void)removeTransactionObserver;
 
 /**
- * 发起内购
+ * 购买
+ *
+ * @param productId 购买产品ID
+ * @param handle    购买状态回调
  */
 - (void)startPurchaseWithProductId:(NSString *)productId completeHandle:(IAPCompletionHandle)handle;
+
+/**
+ * 订阅
+ *
+ * @param productId 购买产品ID
+ * @param password  App专用共享密钥
+ * @param handle    购买状态回调
+ */
+- (void)startSubscribeWithProductId:(NSString *)productId password:(NSString *)password completeHandle:(IAPCompletionHandle)handle;
 
 /**
  * 恢复内购

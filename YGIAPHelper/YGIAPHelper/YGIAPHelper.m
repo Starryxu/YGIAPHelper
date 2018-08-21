@@ -81,6 +81,13 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
     }
 }
 
+
+- (void)startSubscribeWithProductId:(NSString *)productId password:(NSString *)password completeHandle:(IAPCompletionHandle)handle {
+    _password = password;
+    [self startPurchaseWithProductId:productId completeHandle:handle];
+}
+
+
 //恢复购买
 - (void)restorePurchasesWithCompleteHandle:(IAPCompletionHandle)handle {
     //开始恢复
@@ -128,8 +135,8 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
 
 // 恢复购买结束回调
 - (void)paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue {
-    //没有进入- (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray<SKPaymentTransaction *> *)transactions 方法
-    //恢复产品数量为0  提前结束
+    // 没有进入- (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray<SKPaymentTransaction *> *)transactions 方法
+    // 恢复产品数量为0  提前结束
     if(_restoreProgress != ENUMRestoreProgressUpdatedTransactions){
         [self handleActionWithType:SIAPPurchRestoreNotBuy data:nil];
     }
@@ -185,7 +192,12 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
     [self handleActionWithType:SIAPPurchSuccess data:receiptDict];
     
     NSError *error;
-    NSDictionary *requestContents = @{@"receipt-data": [receipt base64EncodedStringWithOptions:0]};
+    NSDictionary *requestContents;
+    if (_password) {
+        requestContents = @{@"receipt-data": [receipt base64EncodedStringWithOptions:0], @"password":_password};
+    } else {
+        requestContents = @{@"receipt-data": [receipt base64EncodedStringWithOptions:0]};
+    }
     NSData *requestData = [NSJSONSerialization dataWithJSONObject:requestContents options:0 error:&error];
     
     // 交易凭证为空验证失败
@@ -194,11 +206,13 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
         return;
     }
     
-    //In the test environment, use https://sandbox.itunes.apple.com/verifyReceipt
-    //In the real environment, use https://buy.itunes.apple.com/verifyReceipt
-    NSString *serverString = @"https://buy.itunes.apple.com/verifyReceipt";
+    // 沙盒环境验证: https://sandbox.itunes.apple.com/verifyReceipt
+    // 正式环境验证: https://buy.itunes.apple.com/verifyReceipt
+    NSString *serverString;
     if (flag) {
         serverString = @"https://sandbox.itunes.apple.com/verifyReceipt";
+    } else {
+        serverString = @"https://buy.itunes.apple.com/verifyReceipt";
     }
     NSURL *storeURL = [NSURL URLWithString:serverString];
     NSMutableURLRequest *storeRequest = [NSMutableURLRequest requestWithURL:storeURL];
@@ -222,28 +236,39 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
                 });
             }
             
+            /****************************************************************************
+             验证错误状态码:
+             -> 21000 App Store无法读取你提供的JSON数据
+             -> 21002 收据数据不符合格式
+             -> 21003 收据无法被验证
+             -> 21004 你提供的共享密钥和账户的共享密钥不一致
+             -> 21005 收据服务器当前不可用
+             -> 21006 收据是有效的，但订阅服务已经过期。当收到这个信息时，解码后的收据信息也包含在返回内容中
+             -> 21007 收据信息是测试用（sandbox），但却被发送到产品环境中验证
+             -> 21008 收据信息是产品环境中使用，但却被发送到测试环境中验证
+             ****************************************************************************/
+            
             // 先验证正式服务器,如果正式服务器返回21007再去苹果测试服务器验证,沙盒测试环境苹果用的是测试服务器
             NSString *status = [NSString stringWithFormat:@"%@", jsonResponse[@"status"]];
             if (status && [status isEqualToString:@"21007"]) {
                 [self verifyPurchaseWithPaymentTransaction:transaction isTestServer:YES operationId:operationId];
             } else if (status && [status isEqualToString:@"0"]) {
-                //订单校验成功
-                
-                //APP添加商品
+                // 订单校验成功
+                // APP添加商品
                 NSString *productId = transaction.payment.productIdentifier;
-                
                 NSLog(@"\n\n===============>> 购买成功ID:%@ <<===============\n\n",productId);
-                
-                //总数量
+                // 订单总数量
                 NSInteger totalCount = [[self.transactionCountMap valueForKey:operationId] integerValue];
-                
-                //已执行数量
+                // 已执行数量
                 NSMutableSet *finishSet = [self.transactionFinishMap valueForKey:operationId];
                 [finishSet addObject:transaction];
-                
-                //需在添加对象后获得对象数量 不然有极低的可能遇到并发问题 而导致不执行回调
+                // 需在添加对象后获得对象数量 不然有极低的可能遇到并发问题 而导致不执行回调
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self handleActionWithType:SIAPPurchVerSuccess data:jsonResponse invokeHandle:[finishSet count]  == totalCount];
+                });
+            } else {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self handleActionWithType:SIAPPurchVerFailed data:nil];
                 });
             }
             NSLog(@"----验证结果 %@", jsonResponse);
@@ -251,9 +276,6 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
     }];
     
     [task resume];
-    
-    //    // 验证成功与否都注销交易,否则会出现虚假凭证信息一直验证不通过,每次进程序都得输入苹果账号
-    //    [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
 }
 
 
