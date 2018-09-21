@@ -7,6 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D335AFAE2136D26E00F53EA0 /* SandBoxHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = D335AFA52136D26E00F53EA0 /* SandBoxHelper.m */; };
+		D335AFAF2136D26E00F53EA0 /* IPAPurchase.m in Sources */ = {isa = PBXBuildFile; fileRef = D335AFA62136D26E00F53EA0 /* IPAPurchase.m */; };
+		D335AFB02136D26E00F53EA0 /* NSDate+category.m in Sources */ = {isa = PBXBuildFile; fileRef = D335AFA82136D26E00F53EA0 /* NSDate+category.m */; };
+		D335AFB12136D26E00F53EA0 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = D335AFAA2136D26E00F53EA0 /* README.md */; };
+		D335AFB22136D26E00F53EA0 /* NSString+category.m in Sources */ = {isa = PBXBuildFile; fileRef = D335AFAB2136D26E00F53EA0 /* NSString+category.m */; };
+		D3465A97212D0EB500C51610 /* YGPrisonBreakCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = D3465A96212D0EB500C51610 /* YGPrisonBreakCheck.m */; };
+		D3728E0D212BF8E900CB6C07 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3728E0C212BF8E900CB6C07 /* StoreKit.framework */; };
+		D3728E18212BF94200CB6C07 /* SVRadialGradientLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = D3728E0F212BF94200CB6C07 /* SVRadialGradientLayer.m */; };
+		D3728E19212BF94200CB6C07 /* SVProgressAnimatedView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3728E12212BF94200CB6C07 /* SVProgressAnimatedView.m */; };
+		D3728E1A212BF94200CB6C07 /* SVProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = D3728E14212BF94200CB6C07 /* SVProgressHUD.m */; };
+		D3728E1B212BF94200CB6C07 /* SVIndefiniteAnimatedView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3728E15212BF94200CB6C07 /* SVIndefiniteAnimatedView.m */; };
+		D3728E1C212BF94200CB6C07 /* SVProgressHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = D3728E16212BF94200CB6C07 /* SVProgressHUD.bundle */; };
 		D374CCFF2125824600C87361 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D374CCFE2125824600C87361 /* AppDelegate.m */; };
 		D374CD022125824600C87361 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D374CD012125824600C87361 /* ViewController.m */; };
 		D374CD052125824600C87361 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D374CD032125824600C87361 /* Main.storyboard */; };
@@ -17,6 +29,27 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D335AFA52136D26E00F53EA0 /* SandBoxHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SandBoxHelper.m; sourceTree = "<group>"; };
+		D335AFA62136D26E00F53EA0 /* IPAPurchase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IPAPurchase.m; sourceTree = "<group>"; };
+		D335AFA72136D26E00F53EA0 /* NSString+category.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+category.h"; sourceTree = "<group>"; };
+		D335AFA82136D26E00F53EA0 /* NSDate+category.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+category.m"; sourceTree = "<group>"; };
+		D335AFA92136D26E00F53EA0 /* NSDate+category.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+category.h"; sourceTree = "<group>"; };
+		D335AFAA2136D26E00F53EA0 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		D335AFAB2136D26E00F53EA0 /* NSString+category.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+category.m"; sourceTree = "<group>"; };
+		D335AFAC2136D26E00F53EA0 /* IPAPurchase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPAPurchase.h; sourceTree = "<group>"; };
+		D335AFAD2136D26E00F53EA0 /* SandBoxHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SandBoxHelper.h; sourceTree = "<group>"; };
+		D3465A95212D0EB500C51610 /* YGPrisonBreakCheck.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YGPrisonBreakCheck.h; sourceTree = "<group>"; };
+		D3465A96212D0EB500C51610 /* YGPrisonBreakCheck.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YGPrisonBreakCheck.m; sourceTree = "<group>"; };
+		D3728E0C212BF8E900CB6C07 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		D3728E0F212BF94200CB6C07 /* SVRadialGradientLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVRadialGradientLayer.m; sourceTree = "<group>"; };
+		D3728E10212BF94200CB6C07 /* SVIndefiniteAnimatedView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVIndefiniteAnimatedView.h; sourceTree = "<group>"; };
+		D3728E11212BF94200CB6C07 /* SVProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVProgressHUD.h; sourceTree = "<group>"; };
+		D3728E12212BF94200CB6C07 /* SVProgressAnimatedView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVProgressAnimatedView.m; sourceTree = "<group>"; };
+		D3728E13212BF94200CB6C07 /* SVRadialGradientLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVRadialGradientLayer.h; sourceTree = "<group>"; };
+		D3728E14212BF94200CB6C07 /* SVProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVProgressHUD.m; sourceTree = "<group>"; };
+		D3728E15212BF94200CB6C07 /* SVIndefiniteAnimatedView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVIndefiniteAnimatedView.m; sourceTree = "<group>"; };
+		D3728E16212BF94200CB6C07 /* SVProgressHUD.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = SVProgressHUD.bundle; sourceTree = "<group>"; };
+		D3728E17212BF94200CB6C07 /* SVProgressAnimatedView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVProgressAnimatedView.h; sourceTree = "<group>"; };
 		D374CCFA2125824500C87361 /* YGIAPHelper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YGIAPHelper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D374CCFD2125824600C87361 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		D374CCFE2125824600C87361 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -36,17 +69,59 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D3728E0D212BF8E900CB6C07 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D335AFA42136D26E00F53EA0 /* ULIPAPurchase-master */ = {
+			isa = PBXGroup;
+			children = (
+				D335AFAC2136D26E00F53EA0 /* IPAPurchase.h */,
+				D335AFA62136D26E00F53EA0 /* IPAPurchase.m */,
+				D335AFA92136D26E00F53EA0 /* NSDate+category.h */,
+				D335AFA82136D26E00F53EA0 /* NSDate+category.m */,
+				D335AFA72136D26E00F53EA0 /* NSString+category.h */,
+				D335AFAB2136D26E00F53EA0 /* NSString+category.m */,
+				D335AFAA2136D26E00F53EA0 /* README.md */,
+				D335AFAD2136D26E00F53EA0 /* SandBoxHelper.h */,
+				D335AFA52136D26E00F53EA0 /* SandBoxHelper.m */,
+			);
+			path = "ULIPAPurchase-master";
+			sourceTree = "<group>";
+		};
+		D3728E0B212BF8E900CB6C07 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D3728E0C212BF8E900CB6C07 /* StoreKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D3728E0E212BF94200CB6C07 /* SVProgressHUD */ = {
+			isa = PBXGroup;
+			children = (
+				D3728E0F212BF94200CB6C07 /* SVRadialGradientLayer.m */,
+				D3728E10212BF94200CB6C07 /* SVIndefiniteAnimatedView.h */,
+				D3728E11212BF94200CB6C07 /* SVProgressHUD.h */,
+				D3728E12212BF94200CB6C07 /* SVProgressAnimatedView.m */,
+				D3728E13212BF94200CB6C07 /* SVRadialGradientLayer.h */,
+				D3728E14212BF94200CB6C07 /* SVProgressHUD.m */,
+				D3728E15212BF94200CB6C07 /* SVIndefiniteAnimatedView.m */,
+				D3728E16212BF94200CB6C07 /* SVProgressHUD.bundle */,
+				D3728E17212BF94200CB6C07 /* SVProgressAnimatedView.h */,
+			);
+			path = SVProgressHUD;
+			sourceTree = "<group>";
+		};
 		D374CCF12125824500C87361 = {
 			isa = PBXGroup;
 			children = (
 				D374CCFC2125824600C87361 /* YGIAPHelper */,
 				D374CCFB2125824500C87361 /* Products */,
+				D3728E0B212BF8E900CB6C07 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -66,6 +141,8 @@
 				D374CCFE2125824600C87361 /* AppDelegate.m */,
 				D374CD002125824600C87361 /* ViewController.h */,
 				D374CD012125824600C87361 /* ViewController.m */,
+				D335AFA42136D26E00F53EA0 /* ULIPAPurchase-master */,
+				D3728E0E212BF94200CB6C07 /* SVProgressHUD */,
 				D374CD032125824600C87361 /* Main.storyboard */,
 				D374CD062125824700C87361 /* Assets.xcassets */,
 				D374CD082125824700C87361 /* LaunchScreen.storyboard */,
@@ -80,6 +157,8 @@
 			children = (
 				D374CD142125828900C87361 /* YGIAPHelper.h */,
 				D374CD152125828900C87361 /* YGIAPHelper.m */,
+				D3465A95212D0EB500C51610 /* YGPrisonBreakCheck.h */,
+				D3465A96212D0EB500C51610 /* YGPrisonBreakCheck.m */,
 			);
 			path = YGIAPHelper;
 			sourceTree = "<group>";
@@ -115,6 +194,14 @@
 				TargetAttributes = {
 					D374CCF92125824500C87361 = {
 						CreatedOnToolsVersion = 9.4.1;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+							com.apple.InAppPurchase = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -143,7 +230,9 @@
 			files = (
 				D374CD0A2125824700C87361 /* LaunchScreen.storyboard in Resources */,
 				D374CD072125824700C87361 /* Assets.xcassets in Resources */,
+				D335AFB12136D26E00F53EA0 /* README.md in Resources */,
 				D374CD052125824600C87361 /* Main.storyboard in Resources */,
+				D3728E1C212BF94200CB6C07 /* SVProgressHUD.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -157,7 +246,16 @@
 				D374CD022125824600C87361 /* ViewController.m in Sources */,
 				D374CD0D2125824800C87361 /* main.m in Sources */,
 				D374CD162125828900C87361 /* YGIAPHelper.m in Sources */,
+				D3728E1B212BF94200CB6C07 /* SVIndefiniteAnimatedView.m in Sources */,
+				D335AFB22136D26E00F53EA0 /* NSString+category.m in Sources */,
+				D3728E1A212BF94200CB6C07 /* SVProgressHUD.m in Sources */,
 				D374CCFF2125824600C87361 /* AppDelegate.m in Sources */,
+				D335AFAF2136D26E00F53EA0 /* IPAPurchase.m in Sources */,
+				D3728E18212BF94200CB6C07 /* SVRadialGradientLayer.m in Sources */,
+				D335AFB02136D26E00F53EA0 /* NSDate+category.m in Sources */,
+				D3728E19212BF94200CB6C07 /* SVProgressAnimatedView.m in Sources */,
+				D3465A97212D0EB500C51610 /* YGPrisonBreakCheck.m in Sources */,
+				D335AFAE2136D26E00F53EA0 /* SandBoxHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -298,13 +396,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = EHJ49E2M82;
+				DEVELOPMENT_TEAM = BG2A9RSCAL;
 				INFOPLIST_FILE = YGIAPHelper/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.xuyaguang.YGIAPHelper;
+				PRODUCT_BUNDLE_IDENTIFIER = com.xtoolapp.noise;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -315,13 +413,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = EHJ49E2M82;
+				DEVELOPMENT_TEAM = BG2A9RSCAL;
 				INFOPLIST_FILE = YGIAPHelper/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.xuyaguang.YGIAPHelper;
+				PRODUCT_BUNDLE_IDENTIFIER = com.xtoolapp.noise;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

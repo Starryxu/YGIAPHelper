@@ -21,7 +21,8 @@ typedef NS_ENUM(NSInteger, SIAPPurchType) {
     SIAPPurchRestoreNotBuy  = 6, // 恢复购买数量为0
     SIAPPurchRestoreFailed  = 7, // 恢复失败
     SIAPPurchEmptyID        = 8, // 购买ID为空
-    SIAPPurchNoProduct      = 9, // 没有可购买商品
+    SIAPPurchPrisonCellPhone= 9, // 越狱手机
+    SIAPPurchNoProduct      = 10,// 没有可购买商品
 };
 
 /**
@@ -29,12 +30,16 @@ typedef NS_ENUM(NSInteger, SIAPPurchType) {
  */
 typedef void (^IAPCompletionHandle)(SIAPPurchType type, NSDictionary *dict);
 
-@interface YGIAPHelper : NSObject
 
 /**
- * App专用共享密钥, 订阅时使用
+ * 内购产品ID
+ *
+ * @param products 有效产品ID
+ * @param invalidProductIdentifiers 无效产品ID
  */
-@property (nonatomic, copy) NSString *password;
+typedef void (^IAPPaymentsProducts)(NSArray *products, NSArray *invalidProductIdentifiers);
+
+@interface YGIAPHelper : NSObject
 
 
 /**
@@ -42,37 +47,37 @@ typedef void (^IAPCompletionHandle)(SIAPPurchType type, NSDictionary *dict);
  */
 + (instancetype)sharedInstance;
 
-/**
- * 添加内购事物监听,默认初始化时已添加
- */
-- (void)addTransactionObserver;
 
 /**
- * 移除内购事物监听,不需要监听时移除
+ * 是否可以购买
  */
-- (void)removeTransactionObserver;
+- (BOOL)canMakePayments;
+
+
+/**
+ * 获取内购产品ID
+ *
+ * @param products 产品ID,包括可用和不可用两部分
+ */
+- (void)getPaymentsProductIDs:(IAPPaymentsProducts)productIDs;
+
+
 
 /**
  * 购买
  *
  * @param productId 购买产品ID
+ * @param password  App专用共享密钥,有订阅时必须传此参数
  * @param handle    购买状态回调
  */
-- (void)startPurchaseWithProductId:(NSString *)productId completeHandle:(IAPCompletionHandle)handle;
+- (void)startPurchaseWithProductId:(NSString *)productId password:(NSString *)password completeHandle:(IAPCompletionHandle)handle;
 
-/**
- * 订阅
- *
- * @param productId 购买产品ID
- * @param password  App专用共享密钥
- * @param handle    购买状态回调
- */
-- (void)startSubscribeWithProductId:(NSString *)productId password:(NSString *)password completeHandle:(IAPCompletionHandle)handle;
 
 /**
  * 恢复内购
  */
-- (void)restorePurchasesWithCompleteHandle:(IAPCompletionHandle)handle;
+- (void)restorePurchasesWithPassword:(NSString *)password completeHandle:(IAPCompletionHandle)handle;
 
 
 @end
+

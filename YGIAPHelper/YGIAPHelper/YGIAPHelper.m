@@ -6,10 +6,20 @@
 //  Copyright © 2018年 xuyagung. All rights reserved.
 //
 
+/** 打印 **/
+#if DEBUG
+#define NSLog(FORMAT, ...)\
+fprintf(stderr,"✅✅✅:%s line:%d content:%s\n", __FUNCTION__, __LINE__, [[NSString stringWithFormat:FORMAT, ##__VA_ARGS__] UTF8String]);
+#else
+#define NSLog(FORMAT, ...) nil
+#endif
+
+
 #import <StoreKit/StoreKit.h>
 #import "YGIAPHelper.h"
+#import "YGPrisonBreakCheck.h"
 
-//内购恢复过程
+// 内购恢复过程
 typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
     ENUMRestoreProgressStop = 0, //尚未开始请求
     ENUMRestoreProgressStart = 1, //开始请求
@@ -17,17 +27,22 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
     ENUMRestoreProgressFinish = 3, //完成请求
 };
 
-@interface YGIAPHelper () <SKPaymentTransactionObserver, SKProductsRequestDelegate> {
-    NSString *_productId;
-    IAPCompletionHandle _handle;
-}
+@interface YGIAPHelper () <SKPaymentTransactionObserver, SKProductsRequestDelegate>
+
+/** 回调Block */
+@property (nonatomic, copy) IAPCompletionHandle handle;
+/** 要购买的产品ID */
+@property (nonatomic, copy) NSString *productId;
+/** App专用共享密钥, 有订阅时必须传此参数 */
+@property (nonatomic, copy) NSString *password;
 
 //判断一份交易获得验证的次数  key为随机值
-@property(nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *transactionCountMap;
+@property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *transactionCountMap;
 //需要验证的支付事务
-@property(nonatomic, strong) NSMutableDictionary<NSString *, NSMutableSet<SKPaymentTransaction *> *> *transactionFinishMap;
+@property (nonatomic, strong) NSMutableDictionary<NSString *, NSMutableSet<SKPaymentTransaction *> *> *transactionFinishMap;
 
-@property(nonatomic,assign)ENUMRestoreProgress restoreProgress;
+@property (nonatomic, assign) ENUMRestoreProgress restoreProgress;
+
 
 @end
 
@@ -44,7 +59,6 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
 
 - (instancetype)init {
     if (self = [super init]) {
-        // 购买监听写在程序入口,程序挂起时移除监听,这样如果有未完成的订单将会自动执行并回调 paymentQueue:updatedTransactions:方法
         [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
     }
     return self;
@@ -54,50 +68,52 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
     [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
 }
 
-- (void)addTransactionObserver {
-    [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
-}
 
-- (void)removeTransactionObserver {
-    [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
-}
 
 #pragma mark - public method
 //开始购买
-- (void)startPurchaseWithProductId:(NSString *)productId completeHandle:(IAPCompletionHandle)handle {
-    if (productId) {
-        if ([SKPaymentQueue canMakePayments]) {
-            _productId = productId;
-            _handle = handle;
-            NSSet *set = [NSSet setWithArray:@[productId]];
-            SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:set];
-            request.delegate = self;
-            [request start];
-        } else {
-            [self handleActionWithType:SIAPPurchNotArrow data:nil];
-        }
-    } else {
-        [self handleActionWithType:SIAPPurchEmptyID data:nil];
+- (void)startPurchaseWithProductId:(NSString *)productId password:(NSString *)password completeHandle:(IAPCompletionHandle)handle {
+    if ([YGPrisonBreakCheck prisonBreakCheck]) { // 判断是否是越狱手机
+        [self handleActionWithType:SIAPPurchPrisonCellPhone data:nil];
+        return;
     }
+    
+    if (!productId) { // 判断传入的产品ID是否为空
+        [self handleActionWithType:SIAPPurchEmptyID data:nil];
+        return;
+    }
+    
+    if ([SKPaymentQueue canMakePayments]) {
+        _productId = productId;
+        _password = password;
+        _handle = handle;
+        NSSet *set = [NSSet setWithArray:@[productId]];
+        SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:set];
+        request.delegate = self;
+        [request start];
+    } else {
+        [self handleActionWithType:SIAPPurchNotArrow data:nil];
+    }
+    
 }
 
 
-- (void)startSubscribeWithProductId:(NSString *)productId password:(NSString *)password completeHandle:(IAPCompletionHandle)handle {
-    _password = password;
-    [self startPurchaseWithProductId:productId completeHandle:handle];
-}
-
-
-//恢复购买
-- (void)restorePurchasesWithCompleteHandle:(IAPCompletionHandle)handle {
-    //开始恢复
+#pragma mark - 恢复购买
+- (void)restorePurchasesWithPassword:(NSString *)password completeHandle:(IAPCompletionHandle)handle {
+    
+    if ([YGPrisonBreakCheck prisonBreakCheck]) { // 判断是否是越狱手机
+        [self handleActionWithType:SIAPPurchPrisonCellPhone data:nil];
+        return;
+    }
+    
     _restoreProgress = ENUMRestoreProgressStart;
+    _password = password;
     _handle = handle;
     [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
 }
 
 #pragma mark - SKPaymentTransactionObserver
-// 队列操作后的回调
+// 方法1:
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray<SKPaymentTransaction *> *)transactions {
     //判断是否为恢复购买的请求
     if (_restoreProgress == ENUMRestoreProgressStart) {
@@ -119,7 +135,6 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
                 NSLog(@"正在购买");
             } break;
             case SKPaymentTransactionStateRestored:{
-                NSLog(@"已经购买过商品");
                 [[SKPaymentQueue defaultQueue] finishTransaction:tran];
                 [self restoreTransaction:tran operationId:operationId];
             } break;
@@ -133,24 +148,20 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
     }
 }
 
-// 恢复购买结束回调
+// 方法2:当恢复内购成功时先调用方法1,再调用方法2
 - (void)paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue {
-    // 没有进入- (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray<SKPaymentTransaction *> *)transactions 方法
-    // 恢复产品数量为0  提前结束
     if(_restoreProgress != ENUMRestoreProgressUpdatedTransactions){
         [self handleActionWithType:SIAPPurchRestoreNotBuy data:nil];
     }
     _restoreProgress = ENUMRestoreProgressFinish;
 }
 
-// 恢复购买失败
+// 方法3:当恢复内购失败时直接调用该方法
 - (void)paymentQueue:(SKPaymentQueue *)queue restoreCompletedTransactionsFailedWithError:(NSError *)error {
-    //恢复失败
     if(_restoreProgress != ENUMRestoreProgressUpdatedTransactions){
         [self handleActionWithType:SIAPPurchRestoreFailed data:@{@"error":error.localizedDescription}];
     }
     _restoreProgress = ENUMRestoreProgressFinish;
-    
 }
 
 
@@ -160,12 +171,12 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
     [self verifyPurchaseWithPaymentTransaction:transaction isTestServer:NO operationId:operationId];
 }
 
-// 完成交易
+// 完成付款
 - (void)completeTransaction:(SKPaymentTransaction *)transaction operationId:(NSString *)operationId {
     [self verifyPurchaseWithPaymentTransaction:transaction isTestServer:NO operationId:operationId];
 }
 
-// 交易失败
+// 付款失败
 - (void)failedTransaction:(SKPaymentTransaction *)transaction {
     if (transaction.error.code != SKErrorPaymentCancelled) {
         [self handleActionWithType:SIAPPurchFailed data:@{@"error":transaction.error.localizedDescription}];
@@ -177,31 +188,22 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
 // 交易验证
 - (void)verifyPurchaseWithPaymentTransaction:(SKPaymentTransaction *)transaction isTestServer:(BOOL)flag operationId:(NSString *)operationId {
     
-    //交易验证
+    // 获取交易凭证
     NSURL *recepitURL = [[NSBundle mainBundle] appStoreReceiptURL];
     NSData *receipt = [NSData dataWithContentsOfURL:recepitURL];
     
     if (!receipt) {
-        // 交易凭证为空验证失败
         [self handleActionWithType:SIAPPurchVerFailed data:nil];
         return;
     }
     
-    NSDictionary *receiptDict = [NSJSONSerialization JSONObjectWithData:receipt options:0 error:nil];
-    // 购买成功将交易凭证发送给服务端进行再次校验
-    [self handleActionWithType:SIAPPurchSuccess data:receiptDict];
     
-    NSError *error;
-    NSDictionary *requestContents;
-    if (_password) {
-        requestContents = @{@"receipt-data": [receipt base64EncodedStringWithOptions:0], @"password":_password};
-    } else {
-        requestContents = @{@"receipt-data": [receipt base64EncodedStringWithOptions:0]};
-    }
-    NSData *requestData = [NSJSONSerialization dataWithJSONObject:requestContents options:0 error:&error];
+    NSError *requestError;
+    NSDictionary *requestContents = @{@"receipt-data": [receipt base64EncodedStringWithOptions:0], @"password":_password?:@""};
+
     
-    // 交易凭证为空验证失败
-    if (!requestData) {
+    NSData *requestData = [NSJSONSerialization dataWithJSONObject:requestContents options:0 error:&requestError];
+    if (requestError) {
         [self handleActionWithType:SIAPPurchVerFailed data:nil];
         return;
     }
@@ -214,6 +216,7 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
     } else {
         serverString = @"https://buy.itunes.apple.com/verifyReceipt";
     }
+    
     NSURL *storeURL = [NSURL URLWithString:serverString];
     NSMutableURLRequest *storeRequest = [NSMutableURLRequest requestWithURL:storeURL];
     [storeRequest setHTTPMethod:@"POST"];
@@ -222,56 +225,62 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
     NSURLSession *session = [NSURLSession sharedSession];
     NSURLSessionDataTask *task = [session dataTaskWithRequest:storeRequest completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         if (error) {
-            // 无法连接服务器,购买校验失败
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self handleActionWithType:SIAPPurchVerFailed data:nil];
             });
+            
         } else {
-            NSError *error;
-            NSDictionary *jsonResponse = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
-            if (!jsonResponse) {
-                // 苹果服务器校验数据返回为空校验失败
-                dispatch_async(dispatch_get_main_queue(), ^{
+            NSError *responseError;
+            NSDictionary *jsonResponse = [NSJSONSerialization JSONObjectWithData:data options:0 error:&responseError];
+            if (responseError || !jsonResponse) {
+                dispatch_async(dispatch_get_main_queue(), ^{ // 回到主线程
                     [self handleActionWithType:SIAPPurchVerFailed data:nil];
-                });
-            }
-            
-            /****************************************************************************
-             验证错误状态码:
-             -> 21000 App Store无法读取你提供的JSON数据
-             -> 21002 收据数据不符合格式
-             -> 21003 收据无法被验证
-             -> 21004 你提供的共享密钥和账户的共享密钥不一致
-             -> 21005 收据服务器当前不可用
-             -> 21006 收据是有效的，但订阅服务已经过期。当收到这个信息时，解码后的收据信息也包含在返回内容中
-             -> 21007 收据信息是测试用（sandbox），但却被发送到产品环境中验证
-             -> 21008 收据信息是产品环境中使用，但却被发送到测试环境中验证
-             ****************************************************************************/
-            
-            // 先验证正式服务器,如果正式服务器返回21007再去苹果测试服务器验证,沙盒测试环境苹果用的是测试服务器
-            NSString *status = [NSString stringWithFormat:@"%@", jsonResponse[@"status"]];
-            if (status && [status isEqualToString:@"21007"]) {
-                [self verifyPurchaseWithPaymentTransaction:transaction isTestServer:YES operationId:operationId];
-            } else if (status && [status isEqualToString:@"0"]) {
-                // 订单校验成功
-                // APP添加商品
-                NSString *productId = transaction.payment.productIdentifier;
-                NSLog(@"\n\n===============>> 购买成功ID:%@ <<===============\n\n",productId);
-                // 订单总数量
-                NSInteger totalCount = [[self.transactionCountMap valueForKey:operationId] integerValue];
-                // 已执行数量
-                NSMutableSet *finishSet = [self.transactionFinishMap valueForKey:operationId];
-                [finishSet addObject:transaction];
-                // 需在添加对象后获得对象数量 不然有极低的可能遇到并发问题 而导致不执行回调
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self handleActionWithType:SIAPPurchVerSuccess data:jsonResponse invokeHandle:[finishSet count]  == totalCount];
                 });
             } else {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self handleActionWithType:SIAPPurchVerFailed data:nil];
-                });
+                
+                NSString *status = [NSString stringWithFormat:@"%@", jsonResponse[@"status"]];
+                /****************************************************************************
+                 验证错误状态码:
+                 -> 21000 App Store无法读取你提供的JSON数据
+                 -> 21002 收据数据不符合格式
+                 -> 21003 收据无法被验证
+                 -> 21004 你提供的共享密钥和账户的共享密钥不一致
+                 -> 21005 收据服务器当前不可用
+                 -> 21006 收据是有效的，但订阅服务已经过期。当收到这个信息时，解码后的收据信息也包含在返回内容中
+                 -> 21007 收据信息是测试用（sandbox），但却被发送到产品环境中验证
+                 -> 21008 收据信息是产品环境中使用，但却被发送到测试环境中验证
+                 -> 21100-21199 内部数据访问错误
+                 ****************************************************************************/
+                
+                // 先验证正式服务器,如果正式服务器返回21007再去苹果测试服务器验证,沙盒测试环境苹果用的是测试服务器
+                if (status && [status isEqualToString:@"21007"]) { // 验证沙盒环境
+                    [self verifyPurchaseWithPaymentTransaction:transaction isTestServer:YES operationId:operationId];
+                    
+                } else if (status && [status isEqualToString:@"0"]) { // 验证订单都ID在收据中
+                    //APP添加商品
+                    NSString *productId = transaction.payment.productIdentifier;
+                    
+                    NSLog(@"\n\n===============>> 购买成功ID:%@ <<===============\n\n",productId);
+                    
+                    //总数量
+                    NSInteger totalCount = [[self.transactionCountMap valueForKey:operationId] integerValue];
+                    
+                    //已执行数量
+                    NSMutableSet *finishSet = [self.transactionFinishMap valueForKey:operationId];
+                    [finishSet addObject:transaction];
+                    
+                    if ([finishSet count]  == totalCount) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [self handleActionWithType:SIAPPurchVerSuccess data:jsonResponse];
+                        });
+                    }
+                    
+                } else {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self handleActionWithType:SIAPPurchVerFailed data:nil];
+                    });
+                }
             }
-            NSLog(@"----验证结果 %@", jsonResponse);
         }
     }];
     
@@ -280,7 +289,6 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
 
 
 #pragma mark - SKProductsRequestDelegate
-//发送请求后 会回调  执行这个方法
 - (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response {
     NSArray *products = response.products;
     if ([products count] <= 0) {
@@ -297,7 +305,6 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
         }
     }
     
-    
     NSLog(@"productID:%@", response.invalidProductIdentifiers);
     NSLog(@"产品付费数量:%lu", (unsigned long) [products count]);
     NSLog(@"%@", [p description]);
@@ -312,7 +319,6 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
     [[SKPaymentQueue defaultQueue] addPayment:payment];
 }
 
-//请求失败
 - (void)request:(SKRequest *)request didFailWithError:(NSError *)error {
     [self handleActionWithType:SIAPPurchFailed data:@{@"error":error.localizedDescription}];
     NSLog(@"------------------错误-----------------:%@", error);
@@ -323,12 +329,9 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
 }
 
 
-#pragma mark - private method
-
-//适配器模式
-- (void)handleActionWithType:(SIAPPurchType)type data:(NSDictionary *)dict invokeHandle:(Boolean)invoke {
+#pragma mark - 自定义方法
+- (void)handleActionWithType:(SIAPPurchType)type data:(NSDictionary *)dict {
     
-#ifdef DEBUG
     switch (type) {
         case SIAPPurchSuccess:
             NSLog(@"购买成功");
@@ -363,22 +366,18 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
         default:
             break;
     }
-#endif
     
-    //因为购买成功并不是最后一个步骤 没有意义 不进行处理,需要完成验证
-    if (type == SIAPPurchSuccess) {
+    // 购买成功需要验证
+    if (SIAPPurchSuccess) {
         return;
     }
     
-    if (invoke && _handle) {
+    if (_handle) {
         _handle(type, dict);
     }
 }
 
-//完成回调 自己的block
-- (void)handleActionWithType:(SIAPPurchType)type data:(NSDictionary *)dict {
-    [self handleActionWithType:type data:dict invokeHandle:true];
-}
+
 
 #pragma mark - getter & setter
 - (NSMutableDictionary *)transactionFinishMap {
@@ -398,4 +397,10 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
 
 
 
+
 @end
+
+
+
+
+

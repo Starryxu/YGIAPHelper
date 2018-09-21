@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13122.16" systemVersion="17A277" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13104.12"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -9,11 +13,54 @@
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModuleProvider="" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="ViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xyL-jL-dca">
+                                <rect key="frame" x="137.5" y="150" width="100" height="100"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="100" id="Ue4-rn-4Td"/>
+                                    <constraint firstAttribute="width" constant="100" id="gsk-Nc-ZDg"/>
+                                </constraints>
+                                <state key="normal" title="购买"/>
+                                <connections>
+                                    <action selector="pay:" destination="BYZ-38-t0r" eventType="touchUpInside" id="a1L-aA-ae5"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5wa-G0-5iX">
+                                <rect key="frame" x="137" y="260" width="100" height="100"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="100" id="3dj-eI-D9K"/>
+                                    <constraint firstAttribute="height" constant="100" id="vUH-Im-zfo"/>
+                                </constraints>
+                                <state key="normal" title="订阅"/>
+                                <connections>
+                                    <action selector="sub:" destination="BYZ-38-t0r" eventType="touchUpInside" id="uev-xM-7v1"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MZs-1E-Ueb">
+                                <rect key="frame" x="137" y="370" width="100" height="100"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="100" id="NIW-gA-V4E"/>
+                                    <constraint firstAttribute="width" constant="100" id="iQk-oJ-fBV"/>
+                                </constraints>
+                                <state key="normal" title="恢复"/>
+                                <connections>
+                                    <action selector="ret:" destination="BYZ-38-t0r" eventType="touchUpInside" id="wKq-w9-F3s"/>
+                                </connections>
+                            </button>
+                        </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="MZs-1E-Ueb" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Ilb-tq-wx4"/>
+                            <constraint firstItem="5wa-G0-5iX" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="K7R-3x-GRE"/>
+                            <constraint firstItem="xyL-jL-dca" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="LQx-bt-DA7"/>
+                            <constraint firstItem="xyL-jL-dca" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="130" id="Nm2-zV-BVw"/>
+                            <constraint firstItem="5wa-G0-5iX" firstAttribute="top" secondItem="xyL-jL-dca" secondAttribute="bottom" constant="10" id="qaR-Xp-QRF"/>
+                            <constraint firstItem="MZs-1E-Ueb" firstAttribute="top" secondItem="5wa-G0-5iX" secondAttribute="bottom" constant="10" id="t4f-S7-SZN"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                 </viewController>
