@@ -69,7 +69,7 @@ typedef void (^IAPCompletionHandle)(IAPPurchType type, NSDictionary *dict);
  * @param handle    购买状态回调
  */
 - (void)startSubscribeWithProductId:(NSString * _Nonnull)productId
-                           password:(NSString * _Nonnull)password
+                           password:(NSString * _Nullable)password
                      completeHandle:(IAPCompletionHandle _Nullable)handle;
 
 /**

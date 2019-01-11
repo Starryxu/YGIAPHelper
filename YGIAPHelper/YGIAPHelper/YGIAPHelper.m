@@ -70,35 +70,65 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
 }
 
 #pragma mark - public method
-// 开始购买
+// 购买
 - (void)startPurchaseWithProductId:(NSString * _Nonnull)productId completeHandle:(IAPCompletionHandle _Nullable)handle {
-    if (productId) {
-        if ([SKPaymentQueue canMakePayments]) {
-            _productId = productId;
-            _handle = handle;
-            NSSet *set = [NSSet setWithArray:@[productId]];
-            SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:set];
-            request.delegate = self;
-            [request start];
-        } else {
-            [self handleActionWithType:IAPPurchNotAllow data:nil];
+    [self startSubscribeWithProductId:productId password:nil completeHandle:handle];
+}
+
+// 订阅
+- (void)startSubscribeWithProductId:(NSString * _Nonnull)productId password:(NSString * _Nullable)password completeHandle:(IAPCompletionHandle _Nullable)handle {
+    if (!productId) {
+        [self handleActionWithType:IAPPurchEmptyID data:nil];
+        return;
+    }
+    
+    if (![SKPaymentQueue canMakePayments]) {
+        [self handleActionWithType:IAPPurchNotAllow data:nil];
+        return;
+    }
+    
+    _productId = productId;
+    _password = password;
+    _handle = handle;
+    NSSet *set = [NSSet setWithArray:@[productId]];
+    SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:set];
+    request.delegate = self;
+    [request start];
+}
+
+#pragma mark - SKProductsRequestDelegate
+//发送请求后 会回调  执行这个方法
+- (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response {
+    NSArray *products = response.products;
+    if ([products count] <= 0) {
+        NSLog(@"--------------没有商品------------------");
+        [self handleActionWithType:IAPPurchNoProduct data:nil];
+        return;
+    }
+    
+    SKProduct *p = nil;
+    for (SKProduct *pro in products) {
+        if ([pro.productIdentifier isEqualToString:_productId]) {
+            p = pro;
+            break;
         }
-    } else {
-        [self handleActionWithType:IAPPurchEmptyID data:nil];
     }
+    
+    
+    NSLog(@"productID:%@", response.invalidProductIdentifiers);
+    NSLog(@"产品付费数量:%lu", (unsigned long) [products count]);
+    NSLog(@"%@", [p description]);
+    NSLog(@"%@", [p localizedTitle]);
+    NSLog(@"%@", [p localizedDescription]);
+    NSLog(@"%@", [p price]);
+    NSLog(@"%@", [p productIdentifier]);
+    NSLog(@"发送购买请求");
+    
+    
+    SKPayment *payment = [SKPayment paymentWithProduct:p];
+    [[SKPaymentQueue defaultQueue] addPayment:payment];
 }
 
-
-- (void)startSubscribeWithProductId:(NSString * _Nonnull)productId password:(NSString * _Nonnull)password completeHandle:(IAPCompletionHandle _Nullable)handle {
-    
-    if (!productId || !password) {
-        [self handleActionWithType:IAPPurchEmptyID data:nil];
-    
-    } else {
-        _password = password;
-        [self startPurchaseWithProductId:productId completeHandle:handle];
-    }
-}
 
 
 // 恢复购买
@@ -293,38 +323,6 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
 }
 
 
-#pragma mark - SKProductsRequestDelegate
-//发送请求后 会回调  执行这个方法
-- (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response {
-    NSArray *products = response.products;
-    if ([products count] <= 0) {
-        NSLog(@"--------------没有商品------------------");
-        [self handleActionWithType:IAPPurchNoProduct data:nil];
-        return;
-    }
-    
-    SKProduct *p = nil;
-    for (SKProduct *pro in products) {
-        if ([pro.productIdentifier isEqualToString:_productId]) {
-            p = pro;
-            break;
-        }
-    }
-    
-    
-    NSLog(@"productID:%@", response.invalidProductIdentifiers);
-    NSLog(@"产品付费数量:%lu", (unsigned long) [products count]);
-    NSLog(@"%@", [p description]);
-    NSLog(@"%@", [p localizedTitle]);
-    NSLog(@"%@", [p localizedDescription]);
-    NSLog(@"%@", [p price]);
-    NSLog(@"%@", [p productIdentifier]);
-    NSLog(@"发送购买请求");
-    
-    
-    SKPayment *payment = [SKPayment paymentWithProduct:p];
-    [[SKPaymentQueue defaultQueue] addPayment:payment];
-}
 
 //请求失败
 - (void)request:(SKRequest *)request didFailWithError:(NSError *)error {
