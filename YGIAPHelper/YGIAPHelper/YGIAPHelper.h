@@ -11,23 +11,23 @@
 /**
  * 购买/恢复 结果类型
  */
-typedef NS_ENUM(NSInteger, SIAPPurchType) {
-    SIAPPurchSuccess        = 0, // 购买成功
-    SIAPPurchFailed         = 1, // 购买失败
-    SIAPPurchCancle         = 2, // 取消购买
-    SIAPPurchVerFailed      = 3, // 订单校验失败
-    SIAPPurchVerSuccess     = 4, // 订单校验成功
-    SIAPPurchNotArrow       = 5, // 不允许内购
-    SIAPPurchRestoreNotBuy  = 6, // 恢复购买数量为0
-    SIAPPurchRestoreFailed  = 7, // 恢复失败
-    SIAPPurchEmptyID        = 8, // 购买ID为空
-    SIAPPurchNoProduct      = 9, // 没有可购买商品
+typedef NS_ENUM(NSInteger, IAPPurchType) {
+    IAPPurchSuccess        = 0, // 购买成功
+    IAPPurchFailed         = 1, // 购买失败
+    IAPPurchCancle         = 2, // 取消购买
+    IAPPurchVerFailed      = 3, // 订单校验失败
+    IAPPurchVerSuccess     = 4, // 订单校验成功
+    IAPPurchNotAllow       = 5, // 不允许内购
+    IAPPurchRestoreNotBuy  = 6, // 恢复购买数量为0
+    IAPPurchRestoreFailed  = 7, // 恢复失败
+    IAPPurchEmptyID        = 8, // 购买ID为空
+    IAPPurchNoProduct      = 9, // 没有可购买商品
 };
 
 /**
  * Block回调:1:dict为收据; 2:错误信息@{@"error":@""}
  */
-typedef void (^IAPCompletionHandle)(SIAPPurchType type, NSDictionary *dict);
+typedef void (^IAPCompletionHandle)(IAPPurchType type, NSDictionary *dict);
 
 @interface YGIAPHelper : NSObject
 
@@ -58,7 +58,8 @@ typedef void (^IAPCompletionHandle)(SIAPPurchType type, NSDictionary *dict);
  * @param productId 购买产品ID
  * @param handle    购买状态回调
  */
-- (void)startPurchaseWithProductId:(NSString *)productId completeHandle:(IAPCompletionHandle)handle;
+- (void)startPurchaseWithProductId:(NSString * _Nonnull)productId
+                    completeHandle:(IAPCompletionHandle _Nullable)handle;
 
 /**
  * 订阅
@@ -67,12 +68,14 @@ typedef void (^IAPCompletionHandle)(SIAPPurchType type, NSDictionary *dict);
  * @param password  App专用共享密钥
  * @param handle    购买状态回调
  */
-- (void)startSubscribeWithProductId:(NSString *)productId password:(NSString *)password completeHandle:(IAPCompletionHandle)handle;
+- (void)startSubscribeWithProductId:(NSString * _Nonnull)productId
+                           password:(NSString * _Nonnull)password
+                     completeHandle:(IAPCompletionHandle _Nullable)handle;
 
 /**
  * 恢复内购
  */
-- (void)restorePurchasesWithCompleteHandle:(IAPCompletionHandle)handle;
+- (void)restorePurchasesWithCompleteHandle:(IAPCompletionHandle _Nullable)handle;
 
 
 @end
