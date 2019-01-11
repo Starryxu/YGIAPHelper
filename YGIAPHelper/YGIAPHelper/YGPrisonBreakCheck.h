@@ -9,5 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @interface YGPrisonBreakCheck : NSObject
+
 + (BOOL)prisonBreakCheck;
+
 @end

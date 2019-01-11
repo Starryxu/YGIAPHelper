@@ -11,24 +11,24 @@
 /**
  * 购买/恢复 结果类型
  */
-typedef NS_ENUM(NSInteger, SIAPPurchType) {
-    SIAPPurchSuccess        = 0, // 购买成功
-    SIAPPurchFailed         = 1, // 购买失败
-    SIAPPurchCancle         = 2, // 取消购买
-    SIAPPurchVerFailed      = 3, // 订单校验失败
-    SIAPPurchVerSuccess     = 4, // 订单校验成功
-    SIAPPurchNotArrow       = 5, // 不允许内购
-    SIAPPurchRestoreNotBuy  = 6, // 恢复购买数量为0
-    SIAPPurchRestoreFailed  = 7, // 恢复失败
-    SIAPPurchEmptyID        = 8, // 购买ID为空
-    SIAPPurchPrisonCellPhone= 9, // 越狱手机
-    SIAPPurchNoProduct      = 10,// 没有可购买商品
+typedef NS_ENUM(NSInteger, IAPPurchType) {
+    IAPPurchSuccess        = 0, // 购买成功
+    IAPPurchFailed         = 1, // 购买失败
+    IAPPurchCancle         = 2, // 取消购买
+    IAPPurchVerFailed      = 3, // 订单校验失败
+    IAPPurchVerSuccess     = 4, // 订单校验成功
+    IAPPurchNotArrow       = 5, // 不允许内购
+    IAPPurchRestoreNotBuy  = 6, // 恢复购买数量为0
+    IAPPurchRestoreFailed  = 7, // 恢复失败
+    IAPPurchEmptyID        = 8, // 购买ID为空
+    IAPPurchPrisonCellPhone= 9, // 越狱手机
+    IAPPurchNoProduct      = 10,// 没有可购买商品
 };
 
 /**
  * Block回调:1:dict为收据; 2:错误信息@{@"error":@""}
  */
-typedef void (^IAPCompletionHandle)(SIAPPurchType type, NSDictionary *dict);
+typedef void (^IAPCompletionHandle)(IAPPurchType type, NSDictionary *dict);
 
 
 /**
@@ -40,7 +40,6 @@ typedef void (^IAPCompletionHandle)(SIAPPurchType type, NSDictionary *dict);
 typedef void (^IAPPaymentsProducts)(NSArray *products, NSArray *invalidProductIdentifiers);
 
 @interface YGIAPHelper : NSObject
-
 
 /**
  * 获取内购实例
@@ -55,12 +54,11 @@ typedef void (^IAPPaymentsProducts)(NSArray *products, NSArray *invalidProductId
 
 
 /**
- * 获取内购产品ID
+ * 获取内购产品IDs
  *
- * @param products 产品ID,包括可用和不可用两部分
+ * @param productIDs 产品IDs,包括可用和不可用两部分
  */
 - (void)getPaymentsProductIDs:(IAPPaymentsProducts)productIDs;
-
 
 
 /**

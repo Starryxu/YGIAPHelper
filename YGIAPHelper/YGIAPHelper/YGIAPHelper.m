@@ -74,12 +74,12 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
 //开始购买
 - (void)startPurchaseWithProductId:(NSString *)productId password:(NSString *)password completeHandle:(IAPCompletionHandle)handle {
     if ([YGPrisonBreakCheck prisonBreakCheck]) { // 判断是否是越狱手机
-        [self handleActionWithType:SIAPPurchPrisonCellPhone data:nil];
+        [self handleActionWithType:IAPPurchPrisonCellPhone data:nil];
         return;
     }
     
     if (!productId) { // 判断传入的产品ID是否为空
-        [self handleActionWithType:SIAPPurchEmptyID data:nil];
+        [self handleActionWithType:IAPPurchEmptyID data:nil];
         return;
     }
     
@@ -92,7 +92,7 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
         request.delegate = self;
         [request start];
     } else {
-        [self handleActionWithType:SIAPPurchNotArrow data:nil];
+        [self handleActionWithType:IAPPurchNotArrow data:nil];
     }
     
 }
@@ -102,7 +102,7 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
 - (void)restorePurchasesWithPassword:(NSString *)password completeHandle:(IAPCompletionHandle)handle {
     
     if ([YGPrisonBreakCheck prisonBreakCheck]) { // 判断是否是越狱手机
-        [self handleActionWithType:SIAPPurchPrisonCellPhone data:nil];
+        [self handleActionWithType:IAPPurchPrisonCellPhone data:nil];
         return;
     }
     
@@ -151,7 +151,7 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
 // 方法2:当恢复内购成功时先调用方法1,再调用方法2
 - (void)paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue {
     if(_restoreProgress != ENUMRestoreProgressUpdatedTransactions){
-        [self handleActionWithType:SIAPPurchRestoreNotBuy data:nil];
+        [self handleActionWithType:IAPPurchRestoreNotBuy data:nil];
     }
     _restoreProgress = ENUMRestoreProgressFinish;
 }
@@ -159,7 +159,7 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
 // 方法3:当恢复内购失败时直接调用该方法
 - (void)paymentQueue:(SKPaymentQueue *)queue restoreCompletedTransactionsFailedWithError:(NSError *)error {
     if(_restoreProgress != ENUMRestoreProgressUpdatedTransactions){
-        [self handleActionWithType:SIAPPurchRestoreFailed data:@{@"error":error.localizedDescription}];
+        [self handleActionWithType:IAPPurchRestoreFailed data:@{@"error":error.localizedDescription}];
     }
     _restoreProgress = ENUMRestoreProgressFinish;
 }
@@ -179,9 +179,9 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
 // 付款失败
 - (void)failedTransaction:(SKPaymentTransaction *)transaction {
     if (transaction.error.code != SKErrorPaymentCancelled) {
-        [self handleActionWithType:SIAPPurchFailed data:@{@"error":transaction.error.localizedDescription}];
+        [self handleActionWithType:IAPPurchFailed data:@{@"error":transaction.error.localizedDescription}];
     } else {
-        [self handleActionWithType:SIAPPurchCancle data:nil];
+        [self handleActionWithType:IAPPurchCancle data:nil];
     }
 }
 
@@ -193,7 +193,7 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
     NSData *receipt = [NSData dataWithContentsOfURL:recepitURL];
     
     if (!receipt) {
-        [self handleActionWithType:SIAPPurchVerFailed data:nil];
+        [self handleActionWithType:IAPPurchVerFailed data:nil];
         return;
     }
     
@@ -204,7 +204,7 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
     
     NSData *requestData = [NSJSONSerialization dataWithJSONObject:requestContents options:0 error:&requestError];
     if (requestError) {
-        [self handleActionWithType:SIAPPurchVerFailed data:nil];
+        [self handleActionWithType:IAPPurchVerFailed data:nil];
         return;
     }
     
@@ -226,7 +226,7 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
     NSURLSessionDataTask *task = [session dataTaskWithRequest:storeRequest completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         if (error) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self handleActionWithType:SIAPPurchVerFailed data:nil];
+                [self handleActionWithType:IAPPurchVerFailed data:nil];
             });
             
         } else {
@@ -234,7 +234,7 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
             NSDictionary *jsonResponse = [NSJSONSerialization JSONObjectWithData:data options:0 error:&responseError];
             if (responseError || !jsonResponse) {
                 dispatch_async(dispatch_get_main_queue(), ^{ // 回到主线程
-                    [self handleActionWithType:SIAPPurchVerFailed data:nil];
+                    [self handleActionWithType:IAPPurchVerFailed data:nil];
                 });
             } else {
                 
@@ -271,13 +271,13 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
                     
                     if ([finishSet count]  == totalCount) {
                         dispatch_async(dispatch_get_main_queue(), ^{
-                            [self handleActionWithType:SIAPPurchVerSuccess data:jsonResponse];
+                            [self handleActionWithType:IAPPurchVerSuccess data:jsonResponse];
                         });
                     }
                     
                 } else {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [self handleActionWithType:SIAPPurchVerFailed data:nil];
+                        [self handleActionWithType:IAPPurchVerFailed data:nil];
                     });
                 }
             }
@@ -293,7 +293,7 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
     NSArray *products = response.products;
     if ([products count] <= 0) {
         NSLog(@"--------------没有商品------------------");
-        [self handleActionWithType:SIAPPurchNoProduct data:nil];
+        [self handleActionWithType:IAPPurchNoProduct data:nil];
         return;
     }
     
@@ -320,7 +320,7 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
 }
 
 - (void)request:(SKRequest *)request didFailWithError:(NSError *)error {
-    [self handleActionWithType:SIAPPurchFailed data:@{@"error":error.localizedDescription}];
+    [self handleActionWithType:IAPPurchFailed data:@{@"error":error.localizedDescription}];
     NSLog(@"------------------错误-----------------:%@", error);
 }
 
@@ -330,37 +330,37 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
 
 
 #pragma mark - 自定义方法
-- (void)handleActionWithType:(SIAPPurchType)type data:(NSDictionary *)dict {
+- (void)handleActionWithType:(IAPPurchType)type data:(NSDictionary *)dict {
     
     switch (type) {
-        case SIAPPurchSuccess:
+        case IAPPurchSuccess:
             NSLog(@"购买成功");
             break;
-        case SIAPPurchFailed:
+        case IAPPurchFailed:
             NSLog(@"购买失败");
             break;
-        case SIAPPurchCancle:
+        case IAPPurchCancle:
             NSLog(@"用户取消购买");
             break;
-        case SIAPPurchVerFailed:
+        case IAPPurchVerFailed:
             NSLog(@"订单校验失败");
             break;
-        case SIAPPurchVerSuccess:
+        case IAPPurchVerSuccess:
             NSLog(@"订单校验成功");
             break;
-        case SIAPPurchNotArrow:
+        case IAPPurchNotArrow:
             NSLog(@"不允许程序内付费");
             break;
-        case SIAPPurchRestoreNotBuy:
+        case IAPPurchRestoreNotBuy:
             NSLog(@"购买数量为0");
             break;
-        case SIAPPurchRestoreFailed:
+        case IAPPurchRestoreFailed:
             NSLog(@"内购恢复失败");
             break;
-        case SIAPPurchEmptyID:
+        case IAPPurchEmptyID:
             NSLog(@"商品ID为空");
             break;
-        case SIAPPurchNoProduct:
+        case IAPPurchNoProduct:
             NSLog(@"没有可购买商品");
             break;
         default:
@@ -368,7 +368,7 @@ typedef NS_ENUM(NSInteger, ENUMRestoreProgress) {
     }
     
     // 购买成功需要验证
-    if (SIAPPurchSuccess) {
+    if (IAPPurchSuccess) {
         return;
     }
     
